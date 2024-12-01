@@ -1,4 +1,5 @@
-import { Image, Text, View, StyleSheet} from "react-native";
+import { View, StyleSheet} from "react-native";
+import { Text, Card, Divider} from "react-native-paper";
 
 export default function IngredientList({ meal }) {
     const ingredients = [];
@@ -11,53 +12,20 @@ export default function IngredientList({ meal }) {
     }
   
     return (
-      <View>
-        <Text style={styles.header}>{meal.strMeal}</Text>
-        <Image source={{ uri: meal.strMealThumb }} style={styles.image} />
-        <Text style={styles.subHeader}>Ingredients:</Text>
-        {ingredients.map((item, index) => (
-          <Text key={index} style={styles.ingredient}>
+      <Card>
+        <Card.Title title={meal.strMeal}/>
+        <Card.Cover source={{ uri: meal.strMealThumb }}  />
+        <Card.Content>
+          <Text variant="titleSmall">Ingredients</Text>
+          {ingredients.map((item, index) => (
+          <Text key={index}>
             {item}
           </Text>
         ))}
-        <Text style={styles.list}> {meal.strInstructions} </Text>
-      </View>
+        <Divider/>
+        <Text variant="titleSmall">Instructions</Text>
+        <Text> {meal.strInstructions} </Text>
+        </Card.Content>
+      </Card>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-      paddingTop: 70,
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    button: {
-      width: 200,
-    },
-    input: {
-      height: 40,
-      width: 200,
-    },
-    list: {
-      paddingTop: 20,
-    },
-    header: {
-      fontSize: 15, 
-      fontWeight: "bold",
-    },
-    subHeader: {
-      fontSize: 15,
-    },
-    image: {
-      width: 50, 
-      height: 50, 
-      margin: 5,
-    },
-    separator: {
-      height: 1,
-      width: "100%",
-      backgroundColor: "gray"
-    },
-  });

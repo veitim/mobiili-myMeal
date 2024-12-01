@@ -1,7 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { Rating } from 'react-native-ratings';
-import { StyleSheet, Text, View, FlatList, Button } from 'react-native';
+import {  Button, TextInput, Card, Text, Divider, IconButton } from 'react-native-paper';
+import { StyleSheet, View, FlatList } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import { fetchMeal } from './FetchFunctions';
@@ -10,6 +12,7 @@ export default function SavedMeals({route}) {
 
   const db = SQLite.useSQLiteContext();
   const [mymeals, setMymeals] = useState([]);
+  const [note, setNote] = useState('');
 
   const updateList = async () => {
     try {
@@ -31,6 +34,17 @@ export default function SavedMeals({route}) {
     }
   }
 
+  const updateItem = async (note, id) => {
+    console.log('updateItem')
+    try {
+      await db.runAsync('UPDATE mymeals SET note=? WHERE id=?', note, id);
+      await updateList();
+    }
+    catch (error) {
+      console.error('Could not delete item', error);
+    }
+  }
+
   const handleFetch = () => {
     setLoading(true);
     let fmeal = mymeals.idMeal
@@ -42,67 +56,27 @@ export default function SavedMeals({route}) {
     .finally(() => setLoading(false));   
   }
 
-  useEffect(() => { updateList() }, []);
-  console.log(mymeals);
+  useFocusEffect(useCallback(() => { updateList() }, []));
+
   return (
-  <View>
-    <View style= {styles.list}>
-    <Text style= {styles.header}>My Meals</Text>
-    <Button title = "Save Meal" onPress={updateList}/>
+  <Card>
     <FlatList
+        data={mymeals}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) =>
-        <View>
-            <Text>
-                {item.strMeal}, 
-                {item.strCategory}
-                <Rating
-                  showRating
-                  style={{ paddingVertical: 10 }}
-                /> 
-                <Text style={{ color: '#0000ff' }} 
-                    onPress={() => deleteItem(item.id)}>   Remove meal
-                </Text>
-            </Text>
-        </View>}
-        data={mymeals}
-        />
-    </View>
-  <StatusBar style="auto" />
-  </View> 
+          <Card>
+            <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
+            <Card.Title
+                title={item.strMeal}
+                subtitle={item.strCategory}
+                right={(props) => <IconButton {...props} icon="delete" onPress={() => deleteItem(item.id)} />} 
+            />
+            <Rating>
+
+            </Rating>
+          </Card>
+        }
+    />
+  </Card> 
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: 70,
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    width: 200,
-  },
-  input: {
-    height: 40,
-    width: 200,
-  },
-  list: {
-    paddingTop: 20,
-  },
-  header: {
-    fontSize: 13, 
-    fontWeight: "bold",
-  },
-  image: {
-    width: 50, 
-    height: 50, 
-    margin: 5,
-  },
-  separator: {
-    height: 1,
-    width: "100%",
-    backgroundColor: "gray"
-  },
-});

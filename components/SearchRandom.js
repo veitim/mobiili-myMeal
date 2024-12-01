@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, FlatList, Button } from 'react-native';
-import { useState } from 'react';
+import { Alert, FlatList } from 'react-native';
+import { Button, Card } from 'react-native-paper';
+import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -37,67 +38,46 @@ export default function SearchRandom() {
 
   const saveItem = async () => {
     try {
+      const alreadyExists = await checkExistance(mymeal.idmeal);
+      if (alreadyExists) {
+        Alert.alert('Recipe is already in Meal list')
+        return;
+      }
       await db.runAsync('INSERT INTO mymeals VALUES (?, ?, ?, ?, ?, ?)'
-        , null, mymeal.idmeal, mymeal.name, mymeal.category, null);
+        , null, mymeal.idmeal, mymeal.name, mymeal.category);
     } catch (error) {
       console.error('Could not add item', error);
     }
   };
 
+  const checkExistance = async (idMeal) => {
+    try {
+      const result = await db.getAllAsync('SELECT * FROM mymeals WHERE idMeal = ?', [idMeal]);
+      return result.length > 0;
+    } catch (error) {
+      console.error('Error checking existence:', error);
+      return false;
+    }
+  };
+
+  useEffect(() => { handleFetch() }, []);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.button}>
-        <Button title="Find Random Meal" onPress={handleFetch} />
-      </View>
-      <View>
-        <Button title = "Save Meal" onPress={saveItem}/>
-      </View>
-      <View style={styles.list}>
-        <FlatList
-          data={meal}
-          keyExtractor={(item) => item.idMeal}
-          renderItem={({ item }) => <IngredientList meal={item} />}
-        />
-      </View>
-      <View>
-        <Button title = "Save Meal" onPress={saveItem}/>
-        
-      </View>
+    <Card>
+      <Card.Actions>
+        <Button mode="contained" onPress={handleFetch}>
+          New Random Meal
+        </Button>
+        <Button mode="contained" onPress={saveItem}>
+          Save Meal
+        </Button>
+      </Card.Actions>
+      <FlatList
+        data={meal}
+        keyExtractor={(item) => item.idMeal}
+        renderItem={({ item }) => <IngredientList meal={item} />}
+      />
       <StatusBar style="auto" />
-    </View>
+    </Card>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: 70,
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    width: 200,
-  },
-  input: {
-    height: 40,
-    width: 200,
-  },
-  list: {
-    paddingTop: 20,
-  },
-  header: {
-    fontSize: 13, 
-    fontWeight: "bold",
-  },
-  image: {
-    width: 50, 
-    height: 50, 
-    margin: 5,
-  },
-  separator: {
-    height: 1,
-    width: "100%",
-    backgroundColor: "gray"
-  },
-});

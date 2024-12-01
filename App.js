@@ -1,15 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { PaperProvider, Appbar, Text, BottomNavigation } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SQLiteProvider } from 'expo-sqlite';
 import * as SQLite from 'expo-sqlite';
 
 import SearchRandom from './components/SearchRandom';
 import SavedMeals from './components/SavedMeals';
 
-const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -23,18 +21,26 @@ export default function App() {
   };
 
   return (
-    <SQLiteProvider
-      databaseName='mymeals.db'
-      onInit={initialize}
-      onError={error => console.error('Could not open database', error)}
-    >
-      <NavigationContainer>
-        <Tab.Navigator>
-          <Tab.Screen name = "Random meal" component = { SearchRandom } />
-          <Tab.Screen name = "MyMeals" component = { SavedMeals } />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </SQLiteProvider>
+    <PaperProvider>
+      <Appbar mode="medium" elevated>
+        <Appbar.Content title="My Meal" />
+      </Appbar>
+      <SQLiteProvider
+        databaseName='mymeals.db'
+        onInit={initialize}
+        onError={error => console.error('Could not open database', error)}
+      >
+        <NavigationContainer>
+          <Tab.Navigator 
+              screenOptions={{
+              headerShown: false,
+            }}>
+            <Tab.Screen name = "Random meal" component = { SearchRandom } />
+            <Tab.Screen name = "MyMeals" component = { SavedMeals } />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </SQLiteProvider>
+    </PaperProvider>
   );
 }
 
