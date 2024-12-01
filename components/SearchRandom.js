@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Alert, FlatList } from 'react-native';
+import { Alert, FlatList, StyleSheet } from 'react-native';
 import { Button, Card } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';
@@ -52,7 +52,7 @@ export default function SearchRandom() {
 
   const checkExistance = async (idMeal) => {
     try {
-      const result = await db.getAllAsync('SELECT * FROM mymeals WHERE idMeal = ?', [idMeal]);
+      const result = await db.getAllAsync('SELECT * FROM mymeals WHERE idMeal = ?', idMeal);
       return result.length > 0;
     } catch (error) {
       console.error('Error checking existence:', error);
@@ -63,7 +63,7 @@ export default function SearchRandom() {
   useEffect(() => { handleFetch() }, []);
 
   return (
-    <Card>
+    <Card style={styles.content}>
       <Card.Actions>
         <Button mode="contained" onPress={handleFetch}>
           New Random Meal
@@ -81,3 +81,10 @@ export default function SearchRandom() {
     </Card>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
