@@ -4,6 +4,7 @@ import { useState } from 'react';
 import IngredientList from './IngredientList';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
+import { fetchRandom } from './FetchFunctions';
 
 export default function SearchRandom() {
 
@@ -11,21 +12,17 @@ export default function SearchRandom() {
 
   const [meal, setMeal] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [mymeals, setMymeals] = useState([]);
   const [mymeal, setMymeal] = useState({
     idmeal: '',
     name: '',
     category: '',
+    rating: null
   });
 
-  const fetchRandom = () => {
+  const handleFetch = () => {
     setLoading(true);
-    fetch(`https://www.themealdb.com/api/json/v1/1/random.php`)
-    .then(response => {
-      if (!response.ok)
-        throw new Error("Error in fetch:" + response.statusText);
-        
-      return response.json()
-    })
+    fetchRandom()
     .then((data) => {
       setMeal(data.meals);
       setMymeal({
@@ -40,8 +37,8 @@ export default function SearchRandom() {
 
   const saveItem = async () => {
     try {
-      await db.runAsync('INSERT INTO mymeal VALUES (?, ?, ?, ?)',null
-        ,mymeal.idmeal, mymeal.name, mymeal.category)
+      await db.runAsync('INSERT INTO mymeals VALUES (?, ?, ?, ?, ?, ?)'
+        , null, mymeal.idmeal, mymeal.name, mymeal.category, null);
     } catch (error) {
       console.error('Could not add item', error);
     }
@@ -50,7 +47,7 @@ export default function SearchRandom() {
   return (
     <View style={styles.container}>
       <View style={styles.button}>
-        <Button title="Find Random Meal" onPress={fetchRandom} />
+        <Button title="Find Random Meal" onPress={handleFetch} />
       </View>
       <View>
         <Button title = "Save Meal" onPress={saveItem}/>
@@ -64,6 +61,7 @@ export default function SearchRandom() {
       </View>
       <View>
         <Button title = "Save Meal" onPress={saveItem}/>
+        
       </View>
       <StatusBar style="auto" />
     </View>

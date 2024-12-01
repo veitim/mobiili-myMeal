@@ -1,28 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { Rating } from 'react-native-ratings';
+import { StyleSheet, Text, View, FlatList, Button } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
+import { fetchMeal } from './FetchFunctions';
 
 export default function SavedMeals({route}) {
+
   const db = SQLite.useSQLiteContext();
-
   const [mymeals, setMymeals] = useState([]);
-
-  const initialize = async (db) => {
-    try {
-      await db.execAsync(
-        `CREATE TABLE IF NOT EXISTS mymeal (id INTEGER PRIMARY KEY NOT NULL, idMeal INT, strMeal TEXT, strCategory TEXT);`);
-    } catch (error) {
-      console.error('Could not open database', error);
-    }
-  }
-  
-  useEffect(() => { updateList() }, []);
 
   const updateList = async () => {
     try {
-      const list = await db.getAllAsync('SELECT * from mymeal');
+      const list = await db.getAllAsync('SELECT * from mymeals');
       setMymeals(list);
     } catch (error) {
       console.error('Could not get items', error);
@@ -32,7 +23,7 @@ export default function SavedMeals({route}) {
   const deleteItem = async (id) => {
     console.log('deleteItem')
     try {
-      await db.runAsync('DELETE FROM mymeal WHERE id=?', id);
+      await db.runAsync('DELETE FROM mymeals WHERE id=?', id);
       await updateList();
     }
     catch (error) {
@@ -40,19 +31,35 @@ export default function SavedMeals({route}) {
     }
   }
 
-  console.log(mymeals);
+  const handleFetch = () => {
+    setLoading(true);
+    let fmeal = mymeals.idMeal
+    fetchMeal(fmeal)
+    .then((data) => {
+      setMeal(data.meals);
+    })
+    .catch(err => console.error(err))
+    .finally(() => setLoading(false));   
+  }
 
+  useEffect(() => { updateList() }, []);
+  console.log(mymeals);
   return (
   <View>
     <View style= {styles.list}>
     <Text style= {styles.header}>My Meals</Text>
+    <Button title = "Save Meal" onPress={updateList}/>
     <FlatList
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) =>
         <View>
             <Text>
                 {item.strMeal}, 
-                {item.strCategory} 
+                {item.strCategory}
+                <Rating
+                  showRating
+                  style={{ paddingVertical: 10 }}
+                /> 
                 <Text style={{ color: '#0000ff' }} 
                     onPress={() => deleteItem(item.id)}>   Remove meal
                 </Text>
