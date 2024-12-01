@@ -2,11 +2,20 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, FlatList, Button } from 'react-native';
 import { useState } from 'react';
 import IngredientList from './IngredientList';
+import * as SQLite from 'expo-sqlite';
+import { useSQLiteContext } from 'expo-sqlite';
 
 export default function SearchRandom() {
 
+  const db = SQLite.useSQLiteContext();
+
   const [meal, setMeal] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [mymeal, setMymeal] = useState({
+    idmeal: '',
+    name: '',
+    category: '',
+  });
 
   const fetchRandom = () => {
     setLoading(true);
@@ -17,15 +26,34 @@ export default function SearchRandom() {
         
       return response.json()
     })
-    .then(data => setMeal(data.meals))
+    .then((data) => {
+      setMeal(data.meals);
+      setMymeal({
+        idmeal: data.meals[0].idMeal,
+        name: data.meals[0].strMeal,
+        category: data.meals[0].strCategory,
+      });
+    })
     .catch(err => console.error(err))
     .finally(() => setLoading(false));   
   }
+
+  const saveItem = async () => {
+    try {
+      await db.runAsync('INSERT INTO mymeal VALUES (?, ?, ?, ?)',null
+        ,mymeal.idmeal, mymeal.name, mymeal.category)
+    } catch (error) {
+      console.error('Could not add item', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.button}>
         <Button title="Find Random Meal" onPress={fetchRandom} />
+      </View>
+      <View>
+        <Button title = "Save Meal" onPress={saveItem}/>
       </View>
       <View style={styles.list}>
         <FlatList
@@ -33,6 +61,9 @@ export default function SearchRandom() {
           keyExtractor={(item) => item.idMeal}
           renderItem={({ item }) => <IngredientList meal={item} />}
         />
+      </View>
+      <View>
+        <Button title = "Save Meal" onPress={saveItem}/>
       </View>
       <StatusBar style="auto" />
     </View>
