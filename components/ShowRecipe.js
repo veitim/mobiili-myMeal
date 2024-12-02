@@ -1,13 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet } from 'react-native';
-import { Button, Card, View } from 'react-native-paper';
+import { Button, Card, View, TextInput } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import { fetchMeal, fetchRandom } from './FetchFunctions';
+import { Rating } from 'react-native-ratings';
 
 export default function ShowRecipe({route}) {
+
+const [note, setNote] = useState ('');
 
 const {data} = route.params;
   return (

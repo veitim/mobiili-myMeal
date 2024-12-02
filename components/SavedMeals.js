@@ -74,7 +74,7 @@ export default function SavedMeals({navigation}) {
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) =>
           <Card style={styles.cardItem}>
-            <Card.Cover style={styles.image} source={{ uri: 'https://picsum.photos/700' }} />
+            <Card.Cover style={styles.image} source={{ uri: item.strMealThumb }} />
             <Card.Title
                 title={item.strMeal}
                 subtitle={item.strCategory}
@@ -94,7 +94,6 @@ export default function SavedMeals({navigation}) {
               </Dialog>
             </Portal>
             <Rating
-              style={styles.rating}
               imageSize={20}
               tintColor="rgb(233, 223, 235)"
             />
@@ -121,7 +120,4 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  rating: {
-    
-  }
 });

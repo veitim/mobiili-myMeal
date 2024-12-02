@@ -30,7 +30,7 @@ export default function App() {
   const initialize = async (db) => {
     try {
       await db.execAsync(
-        `CREATE TABLE IF NOT EXISTS mymeals (id INTEGER PRIMARY KEY NOT NULL, idMeal INT, strMeal TEXT, strCategory TEXT, note TEXT, rating INT);`);
+        `CREATE TABLE IF NOT EXISTS mymeals (id INTEGER PRIMARY KEY NOT NULL, idMeal INT, strMeal TEXT, strCategory TEXT, note TEXT, rating INT, strMealThumb TEXT);`);
       } catch ( error ) {
         console.error('Could not open database', error);
       }
