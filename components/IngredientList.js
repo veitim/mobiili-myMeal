@@ -13,7 +13,7 @@ export default function IngredientList({ meal }) {
   
     return (
       <Card style={styles.card}> 
-        <Card.Title title={meal.strMeal}/>
+        <Card.Title style={styles.title} title={meal.strMeal}/>
         <Card.Cover style={styles.image} source={{ uri: meal.strMealThumb }}  />
         <Card.Content>
             <Text style={styles.header} variant="titleSmall">Ingredients</Text>
@@ -53,5 +53,8 @@ const styles = StyleSheet.create({
   instruction: {
     marginBottom: 10,
     marginRight: 10
+  },
+  title: {
+    fontSize: 20
   }
 });

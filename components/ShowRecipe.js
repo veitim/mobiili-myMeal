@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet } from 'react-native';
-import { Button, Card } from 'react-native-paper';
+import { Button, Card, View } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';
 import * as SQLite from 'expo-sqlite';
@@ -10,11 +10,10 @@ import { fetchMeal, fetchRandom } from './FetchFunctions';
 export default function ShowRecipe({route}) {
 
 const {data} = route.params;
-
   return (
     <Card style={styles.content}>
       <FlatList
-        data={data.meal}
+        data={data.meals}
         keyExtractor={(item) => item.idMeal}
         renderItem={({ item }) => <IngredientList meal={item} />}
       />
@@ -25,6 +24,7 @@ const {data} = route.params;
 
 const styles = StyleSheet.create({
   content: {
+    marginTop: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },

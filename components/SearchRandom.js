@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Alert, FlatList, StyleSheet } from 'react-native';
-import { Button, Card } from 'react-native-paper';
+import { Appbar, Button, Card } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';
 import * as SQLite from 'expo-sqlite';
@@ -64,10 +64,11 @@ export default function SearchRandom() {
 
   return (
     <Card style={styles.content}>
+      <Appbar.Header>
+        <Appbar.Content title="My Next Meal" />
+        <Appbar.Action  icon="magnify" onPress={handleFetch} />
+      </Appbar.Header>
       <Card.Actions>
-        <Button mode="contained" onPress={handleFetch}>
-          New Random Meal
-        </Button>
         <Button mode="contained" onPress={saveItem}>
           Save Meal
         </Button>

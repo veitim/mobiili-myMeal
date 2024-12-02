@@ -1,19 +1,32 @@
 import { PaperProvider, Appbar } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
+import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SQLiteProvider } from 'expo-sqlite';
 import * as SQLite from 'expo-sqlite';
 import { BlurView } from 'expo-blur';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import SearchRandom from './components/SearchRandom';
 import SavedMeals from './components/SavedMeals';
 import ShowRecipe from './components/ShowRecipe';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function MyMealsStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="MyMeals" component={SavedMeals} />
+      <Stack.Screen name="Saved Recipe" component={ShowRecipe} />
+    </Stack.Navigator>
+  );
+}
 
 export default function App() {
+
   const initialize = async (db) => {
     try {
       await db.execAsync(
@@ -25,9 +38,6 @@ export default function App() {
 
   return (
     <PaperProvider>
-      <Appbar mode="medium" elevated>
-        <Appbar.Content title="Mymeal" />
-      </Appbar>
       <SQLiteProvider
         databaseName='mymeals.db'
         onInit={initialize}
@@ -36,25 +46,24 @@ export default function App() {
         <NavigationContainer>
         <Tab.Navigator
           screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => { 
-            let iconName;
-            if (route.name === 'Random meal') {
-              iconName = 'fast-food-outline';
-            } else if (route.name === 'MyMeals') {
-              iconName = 'heart-outline';
-            }
-            return <Ionicons name={iconName} size={size} color={color} />;
-            },
             headerShown: false,
             tabBarStyle: { position: 'absolute' },
+            tabBarIcon: ({ focused, color, size }) => { 
+              let iconName;
+              if (route.name === 'Random meal') {
+                iconName = 'fast-food-outline';
+              } else if (route.name === 'MyMeals') {
+                iconName = 'heart-outline';
+              }
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
             tabBarBackground: () => (
               <BlurView tint="light" intensity={100} style={StyleSheet.absoluteFill} />
             ),
           })}
         >
           <Tab.Screen name="Random meal" component={SearchRandom} />
-          <Tab.Screen name="MyMeals" component={SavedMeals} />
-          <Tab.Screen name="Saved Recipe" component={ShowRecipe} />
+          <Tab.Screen name="MyMeals" component={MyMealsStack} />
         </Tab.Navigator>
         </NavigationContainer>
       </SQLiteProvider>

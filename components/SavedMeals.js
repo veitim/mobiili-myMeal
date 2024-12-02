@@ -11,13 +11,18 @@ export default function SavedMeals({navigation}) {
 
   const db = SQLite.useSQLiteContext();
 
-  const [meal, setMeal] = useState([]);
   const [mymeals, setMymeals] = useState([]);
   const [note, setNote] = useState('');
   const [visible, setVisible] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
-  const showWarning = () => setVisible(true);
-  const hideWarning = () => setVisible(false);
+  const showWarning = (id) => {
+    setSelectedId(id);
+    setVisible(true);
+  }
+  const hideWarning = () => {
+    setVisible(false);
+  }
 
   const updateList = async () => {
     try {
@@ -29,10 +34,10 @@ export default function SavedMeals({navigation}) {
   }
 
   const deleteItem = async (id) => {
-    console.log('deleteItem')
     try {
       await db.runAsync('DELETE FROM mymeals WHERE id=?', id);
       await updateList();
+      hideWarning();
     }
     catch (error) {
       console.error('Could not delete item', error);
@@ -51,13 +56,13 @@ export default function SavedMeals({navigation}) {
   }
 
   const handleFetch = (idMeal) => {
-    console.log(idMeal, "handle")
     fetchMeal(idMeal)
     .then((data) => {
-      setMeal(data.meals);
+      return data.meals;
     })
-    .catch(err => console.error(err))
-    .finally(() => navigation.navigate('Saved Recipe', {data:{meal}}));   
+    .then((meals) => navigation.navigate('Saved Recipe', {data:{meals}})
+    )
+    .catch(err => console.error(err))   
   }
 
   useFocusEffect(useCallback(() => { updateList() }, []));
@@ -73,7 +78,7 @@ export default function SavedMeals({navigation}) {
             <Card.Title
                 title={item.strMeal}
                 subtitle={item.strCategory}
-                right={(props) => <IconButton {...props} icon="delete" onPress={showWarning} />}
+                right={(props) => <IconButton {...props} icon="delete" onPress={() => showWarning(item.id)} />}
                 left={(props) => <IconButton {...props} icon="pencil" onPress={() => handleFetch(item.idMeal)} />}
             />
             <Portal>
@@ -84,11 +89,12 @@ export default function SavedMeals({navigation}) {
                 </Dialog.Content>
                 <Dialog.Actions>
                   <Button onPress={hideWarning}>Cancel</Button>
-                  <Button onPress={() => deleteItem(item.id)}>Remove</Button>
+                  <Button onPress={() => deleteItem(selectedId)}>Remove</Button>
                 </Dialog.Actions>
               </Dialog>
             </Portal>
-            <Rating 
+            <Rating
+              style={styles.rating}
               imageSize={20}
               tintColor="rgb(233, 223, 235)"
             />
@@ -101,10 +107,12 @@ export default function SavedMeals({navigation}) {
 
 const styles = StyleSheet.create({
   card: {
+    marginTop: 10,
     marginBottom: 60,
+    
   },
   cardItem: {
-    marginBottom: 20,
+    marginTop: 15,
   },
   image: {
     height: 110,
@@ -113,4 +121,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
+  rating: {
+    
+  }
 });
