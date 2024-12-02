@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView} from "react-native";
+import { View, StyleSheet} from "react-native";
 import { Text, Card, Divider} from "react-native-paper";
 
 export default function IngredientList({ meal }) {

@@ -9,6 +9,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import SearchRandom from './components/SearchRandom';
 import SavedMeals from './components/SavedMeals';
+import ShowRecipe from './components/ShowRecipe';
 
 const Tab = createBottomTabNavigator();
 
@@ -51,8 +52,9 @@ export default function App() {
             ),
           })}
         >
-        <Tab.Screen name="Random meal" component={SearchRandom} />
-        <Tab.Screen name="MyMeals" component={SavedMeals} />
+          <Tab.Screen name="Random meal" component={SearchRandom} />
+          <Tab.Screen name="MyMeals" component={SavedMeals} />
+          <Tab.Screen name="Saved Recipe" component={ShowRecipe} />
         </Tab.Navigator>
         </NavigationContainer>
       </SQLiteProvider>

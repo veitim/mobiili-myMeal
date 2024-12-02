@@ -7,9 +7,11 @@ import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import { fetchMeal } from './FetchFunctions';
 
-export default function SavedMeals({route}) {
+export default function SavedMeals({navigation}) {
 
   const db = SQLite.useSQLiteContext();
+
+  const [meal, setMeal] = useState([]);
   const [mymeals, setMymeals] = useState([]);
   const [note, setNote] = useState('');
   const [visible, setVisible] = useState(false);
@@ -48,19 +50,14 @@ export default function SavedMeals({route}) {
     }
   }
 
-  const handleFetch = () => {
-    setLoading(true);
-    let fmeal = mymeals.idMeal
-    fetchMeal(fmeal)
+  const handleFetch = (idMeal) => {
+    console.log(idMeal, "handle")
+    fetchMeal(idMeal)
     .then((data) => {
       setMeal(data.meals);
     })
     .catch(err => console.error(err))
-    .finally(() => setLoading(false));   
-  }
-
-  const addNote = () => {
-    
+    .finally(() => navigation.navigate('Saved Recipe', {data:{meal}}));   
   }
 
   useFocusEffect(useCallback(() => { updateList() }, []));
@@ -77,7 +74,7 @@ export default function SavedMeals({route}) {
                 title={item.strMeal}
                 subtitle={item.strCategory}
                 right={(props) => <IconButton {...props} icon="delete" onPress={showWarning} />}
-                left={(props) => <IconButton {...props} icon="delete" onPress={showWarning} />} 
+                left={(props) => <IconButton {...props} icon="pencil" onPress={() => handleFetch(item.idMeal)} />}
             />
             <Portal>
               <Dialog visible={visible} onDismiss={hideWarning}>
