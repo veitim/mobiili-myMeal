@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, StyleSheet } from 'react-native';
-import { Button, Card, View, TextInput, Text, IconButton } from 'react-native-paper';
-import { useState, useEffect } from 'react';
+import { Button, Card, TextInput } from 'react-native-paper';
+import { useState, useEffect, useCallback } from 'react';
 import IngredientList from './IngredientList';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -25,6 +25,7 @@ const rated = async (rating) => {
 const updateItem = async (note, rating, id) => {
   try {
     await db.runAsync('UPDATE mymeals SET note=?, rating=? WHERE id=?', note, rating, id);
+    Alert.alert('Note & Rating updated')
     setNote('');
   }
   catch (error) {
@@ -45,25 +46,30 @@ const getItem = async () => {
 useEffect(() => { getItem() }, []);
 
   return (
-    <Card style={styles.content}>
-      <Card>
-        <TextInput
-          label='Add Note'
-          value={note}
-          onChangeText={text => setNote(text)}
-        />
-        <Rating 
-          imageSize={30}
-          tintColor="rgb(233, 223, 235)"
-          startingValue={rating}
-          onFinishRating={rated}
-        />
-        <Button onPress={() => updateItem(note, rating, id)}>Update Note & Rating</Button>
-      </Card>
+    <Card style={styles.container}>
       <FlatList
         data={data.meals}
         keyExtractor={(item) => item.idMeal}
         renderItem={({ item }) => <IngredientList meal={item} />}
+        ListFooterComponent={
+          <Card style={styles.footer}>
+          <TextInput
+            mode='outlined'
+            label='Update note'
+            value={note}
+            onChangeText={text => setNote(text)}
+          />
+          <Rating 
+            type='custom'
+            imageSize={30}
+            tintColor="rgb(247, 243, 242)"
+            ratingBackgroundColor='#c8c7c8'
+            startingValue={rating}
+            onFinishRating={rated}
+          />
+          <Button mode='outlined' onPress={() => updateItem(note, rating, id)}>Update Note & Rating</Button>
+        </Card>
+        }
       />
       <StatusBar style="auto" />
     </Card>
@@ -71,8 +77,21 @@ useEffect(() => { getItem() }, []);
 }
 
 const styles = StyleSheet.create({
-  content: {
-    marginBottom: 80,
-    paddingBottom: 50
-  }
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    marginBottom: 20,
+    paddingBottom: 20,
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  header: {
+    backgroundColor: 'rgb(229, 227, 209)'
+  },
+  footer: {
+    flex: 2,
+    marginBottom: 10,
+    paddingBottom: 10,
+    padding: 10,
+  },
 });

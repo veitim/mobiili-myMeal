@@ -1,4 +1,4 @@
-import { View, StyleSheet} from "react-native";
+import { StyleSheet} from "react-native";
 import { Text, Card, Divider} from "react-native-paper";
 
 export default function IngredientList({ meal }) {
@@ -32,9 +32,7 @@ export default function IngredientList({ meal }) {
 
 const styles = StyleSheet.create({
   card: {
-    paddingBottom: 50,
-    marginLeft: 5,
-    marginRigh: 5,
+    paddingBottom: 5,
   },
   image: {
     height: 110,

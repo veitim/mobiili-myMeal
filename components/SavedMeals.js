@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Rating } from 'react-native-ratings';
-import { Button, TextInput, Card, Text, Divider, IconButton, Portal, Dialog } from 'react-native-paper';
+import { Button, Card, Text, IconButton, Portal, Dialog } from 'react-native-paper';
 import { FlatList, StyleSheet, Pressable } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -56,7 +56,7 @@ export default function SavedMeals({navigation}) {
   useFocusEffect(useCallback(() => { updateList() }, []));
 
   return (
-  <Card style={styles.card}>
+  <Card style={styles.content}>
     <FlatList
         data={mymeals}
         keyExtractor={item => item.id.toString()}
@@ -86,8 +86,10 @@ export default function SavedMeals({navigation}) {
               </Dialog>
             </Portal>
             <Rating
+              type='custom'
               imageSize={20}
-              tintColor="rgb(233, 223, 235)"
+              tintColor="rgb(247, 243, 242)"
+              ratingBackgroundColor='#c8c7c8'
               readonly={true}
               startingValue={item.rating}
             />
@@ -99,17 +101,19 @@ export default function SavedMeals({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginTop: 10,
-    marginBottom: 50,
-    
+  content: {
+    backgroundColor: 'rgb(229, 227, 209)',
+    paddingBottom: 40,
+    marginLeft: 5,
+    marginRight: 5,
   },
   cardItem: {
-    marginTop: 15,
+    marginTop: 10,
+    marginBottom: 10,
   },
   image: {
     height: 110,
-    width: '70%',
+    width: '100%',
     resizeMode: 'cover',
     marginLeft: 20,
     marginRight: 20,

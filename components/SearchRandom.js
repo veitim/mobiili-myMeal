@@ -1,6 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-import { Alert, FlatList, StyleSheet } from 'react-native';
-import { Appbar, Button, Card, Tooltip, IconButton, TextInput } from 'react-native-paper';
+import { Alert, FlatList, StyleSheet,} from 'react-native';
+import { Appbar, Button, Card, TextInput } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';
 import * as SQLite from 'expo-sqlite';
@@ -73,8 +72,8 @@ export default function SearchRandom() {
   useEffect(() => { handleFetch()}, []);
 
   return (
-    <Card style={styles.card}>
-      <Appbar.Header>
+    <Card style={styles.container}>
+      <Appbar.Header >
         <Appbar.Content title="Next Meal" />
         <Button icon="magnify" onPress={handleFetch}>
           New Meal
@@ -87,29 +86,42 @@ export default function SearchRandom() {
         data={meal}
         keyExtractor={(item) => item.idMeal}
         renderItem={({ item }) => <IngredientList meal={item} />}
+        ListFooterComponent={
+          <Card style={styles.footer}>
+          <TextInput
+            mode='outlined'
+            label='Add Note'
+            value={note}
+            onChangeText={text => setNote(text)}
+          />
+          <Rating
+            type='custom'
+            imageSize={30}
+            tintColor="rgb(247, 243, 242)"
+            ratingBackgroundColor='#c8c7c8'
+            startingValue={rating}
+            onFinishRating={rated}
+          />
+        </Card>
+        }
       />
-      <StatusBar style="auto" />
-      <Card >
-      <TextInput
-          label='Add Note'
-          value={note}
-          onChangeText={text => setNote(text)}
-      />
-        <Rating 
-          imageSize={30}
-          tintColor="rgb(233, 223, 235)"
-          startingValue={rating}
-          onFinishRating={rated}
-        />
-      </Card>
     </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginTop: 10,
-    marginBottom: 80,
-    paddingBottom: 50
-  }
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    marginBottom: 20,
+    paddingBottom: 20,
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  footer: {
+    marginRigh: 5,
+    marginBottom: 10,
+    paddingBottom: 10,
+    padding: 10,
+  },
 });
