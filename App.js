@@ -52,7 +52,7 @@ export default function App() {
               let iconName;
               if (route.name === 'Random meal') {
                 iconName = 'fast-food-outline';
-              } else if (route.name === 'MyMeals') {
+              } else if (route.name === 'My Meals') {
                 iconName = 'heart-outline';
               }
               return <Ionicons name={iconName} size={size} color={color} />;
@@ -63,7 +63,7 @@ export default function App() {
           })}
         >
           <Tab.Screen name="Random meal" component={SearchRandom} />
-          <Tab.Screen name="MyMeals" component={MyMealsStack} />
+          <Tab.Screen name="My Meals" component={MyMealsStack} />
         </Tab.Navigator>
         </NavigationContainer>
       </SQLiteProvider>

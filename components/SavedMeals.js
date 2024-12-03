@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Rating } from 'react-native-ratings';
 import { Button, TextInput, Card, Text, Divider, IconButton, Portal, Dialog } from 'react-native-paper';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, Pressable } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import { fetchMeal } from './FetchFunctions';
@@ -12,7 +12,6 @@ export default function SavedMeals({navigation}) {
   const db = SQLite.useSQLiteContext();
 
   const [mymeals, setMymeals] = useState([]);
-  const [note, setNote] = useState('');
   const [visible, setVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
@@ -44,17 +43,6 @@ export default function SavedMeals({navigation}) {
     }
   }
 
-  const updateItem = async (note, id) => {
-    console.log('updateItem')
-    try {
-      await db.runAsync('UPDATE mymeals SET note=? WHERE id=?', note, id);
-      await updateList();
-    }
-    catch (error) {
-      console.error('Could not delete item', error);
-    }
-  }
-
   const handleFetch = (idMeal) => {
     fetchMeal(idMeal)
     .then((data) => {
@@ -74,13 +62,17 @@ export default function SavedMeals({navigation}) {
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) =>
           <Card style={styles.cardItem}>
-            <Card.Cover style={styles.image} source={{ uri: item.strMealThumb }} />
+            <Pressable onPress={() => handleFetch(item.idMeal)}>
+              <Card.Cover style={styles.image} source={{ uri: item.strMealThumb }} />
+            </Pressable>
             <Card.Title
                 title={item.strMeal}
                 subtitle={item.strCategory}
                 right={(props) => <IconButton {...props} icon="delete" onPress={() => showWarning(item.id)} />}
-                left={(props) => <IconButton {...props} icon="pencil" onPress={() => handleFetch(item.idMeal)} />}
             />
+            <Card.Content>
+              <Text >{item.note}</Text>
+            </Card.Content>
             <Portal>
               <Dialog visible={visible} onDismiss={hideWarning}>
                 <Dialog.Title>Delete Confirmation</Dialog.Title>
@@ -96,6 +88,8 @@ export default function SavedMeals({navigation}) {
             <Rating
               imageSize={20}
               tintColor="rgb(233, 223, 235)"
+              readonly={true}
+              startingValue={item.rating}
             />
           </Card>
         }
@@ -107,7 +101,7 @@ export default function SavedMeals({navigation}) {
 const styles = StyleSheet.create({
   card: {
     marginTop: 10,
-    marginBottom: 60,
+    marginBottom: 50,
     
   },
   cardItem: {
@@ -115,7 +109,7 @@ const styles = StyleSheet.create({
   },
   image: {
     height: 110,
-    width: '40%',
+    width: '70%',
     resizeMode: 'cover',
     marginLeft: 20,
     marginRight: 20,

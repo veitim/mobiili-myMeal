@@ -1,11 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { Alert, FlatList, StyleSheet } from 'react-native';
-import { Appbar, Button, Card, Tooltip, IconButton } from 'react-native-paper';
+import { Appbar, Button, Card, Tooltip, IconButton, TextInput } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';
 import * as SQLite from 'expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import { fetchRandom } from './FetchFunctions';
+import { Rating } from 'react-native-ratings';
 
 export default function SearchRandom() {
 
@@ -14,12 +15,18 @@ export default function SearchRandom() {
   const [meal, setMeal] = useState([]);
   const [loading, setLoading] = useState(false);
   const [mymeals, setMymeals] = useState([]);
+  const [rating, setRating] = useState(null);
+  const [note, setNote] = useState('');
   const [mymeal, setMymeal] = useState({
     idmeal: '',
     name: '',
     category: '',
     thumb: ''
   });
+
+  const rated = async (rating) => {
+    setRating(rating)
+  }
 
   const handleFetch = () => {
     setLoading(true);
@@ -43,9 +50,11 @@ export default function SearchRandom() {
       if (alreadyExists) {
         Alert.alert('Recipe is already in Meal list')
         return;
+      } else {
+        Alert.alert("SAVED")
       }
       await db.runAsync('INSERT INTO mymeals VALUES (?, ?, ?, ?, ?, ?, ?)'
-        , null, mymeal.idmeal, mymeal.name, mymeal.category, null, null, mymeal.thumb);
+        , null, mymeal.idmeal, mymeal.name, mymeal.category, note, rating, mymeal.thumb);
     } catch (error) {
       console.error('Could not add item', error);
     }
@@ -61,18 +70,18 @@ export default function SearchRandom() {
     }
   };
 
-  useEffect(() => { handleFetch() }, []);
+  useEffect(() => { handleFetch()}, []);
 
   return (
-    <Card style={styles.content}>
-      <Appbar.Header >
-        <Appbar.Content title="Next Meal ->" />
-        <Tooltip title="Find Meal">
-          <IconButton icon="magnify" selected size={24} onPress={handleFetch} />
-        </Tooltip>
-        <Tooltip title="Save Meal">
-          <IconButton icon="plus" selected size={24} onPress={saveItem} />
-        </Tooltip>
+    <Card style={styles.card}>
+      <Appbar.Header>
+        <Appbar.Content title="Next Meal" />
+        <Button icon="magnify" onPress={handleFetch}>
+          New Meal
+        </Button>
+        <Button icon="plus" onPress={saveItem}>
+          Save Meal
+        </Button>
       </Appbar.Header>
       <FlatList
         data={meal}
@@ -80,20 +89,27 @@ export default function SearchRandom() {
         renderItem={({ item }) => <IngredientList meal={item} />}
       />
       <StatusBar style="auto" />
+      <Card >
+      <TextInput
+          label='Add Note'
+          value={note}
+          onChangeText={text => setNote(text)}
+      />
+        <Rating 
+          imageSize={30}
+          tintColor="rgb(233, 223, 235)"
+          startingValue={rating}
+          onFinishRating={rated}
+        />
+      </Card>
     </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  savebutton: {
-    flex: 1,
-    width: '100%',
-    justifyContent: 'center',
+  card: {
+    marginTop: 10,
+    marginBottom: 80,
+    paddingBottom: 50
   }
-  
 });
