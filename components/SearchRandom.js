@@ -1,4 +1,4 @@
-import { Alert, FlatList, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
+import { Alert, FlatList, StyleSheet, } from 'react-native';
 import { Appbar, Button, Card, TextInput } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';

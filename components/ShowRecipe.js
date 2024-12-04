@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { FlatList, StyleSheet, Alert, KeyboardAvoidingView, } from 'react-native';
+import { FlatList, StyleSheet, Alert } from 'react-native';
 import { Button, Card, TextInput } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import IngredientList from './IngredientList';
